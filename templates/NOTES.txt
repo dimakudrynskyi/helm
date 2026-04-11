@@ -1,0 +1,27 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Release: {{ .Release.Name }}
+Chart:   {{ .Chart.Name }}-{{ .Chart.Version }}
+App:     {{ .Chart.AppVersion }}
+
+{{- if .Values.ingress.enabled }}
+
+The application is available at:
+{{- if .Values.ingress.tls.enabled }}
+  https://{{ .Values.ingress.host }}
+{{- else }}
+  http://{{ .Values.ingress.host }}
+{{- end }}
+
+  Frontend: /
+  Backend API: /api
+{{- else }}
+
+To access the application, run:
+
+  Frontend:
+    kubectl port-forward svc/{{ include "travel-site.fullname" . }}-frontend 8080:{{ .Values.frontend.service.port }}
+
+  Backend:
+    kubectl port-forward svc/{{ include "travel-site.fullname" . }}-backend 4000:{{ .Values.backend.service.port }}
+{{- end }}

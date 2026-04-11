@@ -1,0 +1,37 @@
+## Development environment overrides
+
+frontend:
+  replicaCount: 1
+  image:
+    tag: "dev-latest"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+backend:
+  replicaCount: 1
+  image:
+    tag: "dev-latest"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+ingress:
+  host: travel-site.dev.example.com
+  tls:
+    enabled: false
+
+config:
+  nodeEnv: development
+  databaseUrl: "postgresql://travel_user@dev-db:5432/travel_site_dev"
+  redisUrl: "redis://dev-redis:6379"
+  logLevel: debug
+  corsOrigin: "http://travel-site.dev.example.com"

@@ -1,0 +1,44 @@
+## Production environment overrides
+
+frontend:
+  replicaCount: 3
+  image:
+    tag: "1.0.0"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+backend:
+  replicaCount: 3
+  image:
+    tag: "1.0.0"
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+ingress:
+  host: travel-site.example.com
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  tls:
+    enabled: true
+    secretName: travel-site-tls
+
+config:
+  nodeEnv: production
+  databaseUrl: "postgresql://travel_user@prod-db:5432/travel_site"
+  redisUrl: "redis://prod-redis:6379"
+  logLevel: warn
+  corsOrigin: "https://travel-site.example.com"
+
+serviceAccount:
+  irsaRoleArn: ""

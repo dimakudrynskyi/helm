@@ -1,0 +1,13 @@
+apiVersion: v2
+name: travel-site
+description: A Helm chart for deploying the travel-site application to EKS
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: travel-site-team
+keywords:
+  - travel
+  - frontend
+  - backend
+  - eks
