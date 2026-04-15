@@ -1,0 +1,22 @@
+apiVersion: v2
+name: frontend
+description: A Helm chart for Kubernetes frontend deployment with HPA
+type: application
+version: 1.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: DevOps Team
+    email: devops@example.com
+keywords:
+  - frontend
+  - autoscaling
+  - hpa
+home: https://github.com/dimakudrynskyi/helm
+sources:
+  - https://github.com/dimakudrynskyi/helm
+changes:
+  - version: "1.1.0"
+    changes:
+      - Added HorizontalPodAutoscaler support
+      - Added autoscaling configuration in values
+      - Added production-specific values file
