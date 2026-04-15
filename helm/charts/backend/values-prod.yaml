@@ -1,0 +1,43 @@
+# Production-specific values for backend chart
+replicaCount: 3
+
+image:
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+# Production HPA configuration
+autoscaling:
+  # Enable HPA in production
+  enabled: true
+  # Minimum number of replicas for production
+  minReplicas: 2
+  # Maximum number of replicas for production
+  maxReplicas: 10
+  # Target CPU utilization percentage (70%)
+  targetCPUUtilizationPercentage: 70
+  # Target memory utilization percentage
+  targetMemoryUtilizationPercentage: 80
+  # Advanced scaling behavior for production
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 30
