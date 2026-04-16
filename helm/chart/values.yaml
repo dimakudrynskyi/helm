@@ -1,0 +1,58 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 3
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "1.21.0"
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Pod Disruption Budget Configuration
+podDisruptionBudget:
+  # Frontend PDB settings
+  frontend:
+    enabled: true
+    # minAvailable can be an integer (e.g., 1) or percentage (e.g., "50%")
+    # Override in environment-specific values files
+    minAvailable: 1
+    # maxUnavailable: null
+  
+  # Backend PDB settings
+  backend:
+    enabled: true
+    # minAvailable can be an integer (e.g., 1) or percentage (e.g., "50%")
+    # Override in environment-specific values files
+    minAvailable: 1
+    # maxUnavailable: null
+
+# Kubernetes API version for PDB (policy/v1 for K8s 1.25+)
+pdbApiVersion: policy/v1
+
+# Resource requests and limits
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Node affinity for pod distribution
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - chart
+          topologyKey: kubernetes.io/hostname
