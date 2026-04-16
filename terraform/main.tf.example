@@ -1,0 +1,40 @@
+# Example configuration for S3 application logs bucket module
+
+module "s3_logs" {
+  source = "./modules/s3"
+
+  # Required variables
+  logs_bucket_name    = "my-app-logs-${data.aws_caller_identity.current.account_id}"
+  eks_node_role_arn   = aws_iam_role.eks_node_role.arn
+  environment         = var.environment
+
+  # Optional: customize lifecycle policy
+  glacier_transition_days = 90  # transition to Glacier after 90 days
+  expiration_days         = 365 # delete after 365 days
+
+  # Common tags applied to all resources
+  common_tags = {
+    Project     = "MyApplication"
+    ManagedBy   = "Terraform"
+    Environment = var.environment
+    CreatedAt   = timestamp()
+  }
+
+  depends_on = [
+    aws_iam_role.eks_node_role
+  ]
+}
+
+# Reference the outputs
+output "app_logs_bucket" {
+  description = "S3 bucket for application logs"
+  value       = module.s3_logs.logs_bucket_id
+}
+
+output "app_logs_bucket_arn" {
+  description = "ARN of the application logs bucket for policy references"
+  value       = module.s3_logs.logs_bucket_arn
+}
+
+# Data source to get current AWS account ID
+data "aws_caller_identity" "current" {}
