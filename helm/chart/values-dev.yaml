@@ -1,0 +1,11 @@
+# Development Environment - Pod Disruption Budget Overrides
+# Lower availability requirements for dev environments
+podDisruptionBudget:
+  frontend:
+    enabled: true
+    minAvailable: 1
+    unhealthyPodEvictionPolicy: IfHealthyBudget
+  backend:
+    enabled: true
+    minAvailable: 1
+    unhealthyPodEvictionPolicy: IfHealthyBudget
