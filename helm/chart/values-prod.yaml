@@ -1,0 +1,44 @@
+# Production environment specific values
+
+replicaCount: 5
+
+image:
+  pullPolicy: Always
+  tag: "v1.0.0"
+
+# Production environment uses strict PDB settings with 50% minimum availability
+podDisruptionBudget:
+  frontend:
+    enabled: true
+    minAvailable: "50%"
+  backend:
+    enabled: true
+    minAvailable: "50%"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - chart
+        topologyKey: kubernetes.io/hostname
+
+# Enable pod disruption budget for high availability
+podDisruptionBudget:
+  frontend:
+    enabled: true
+    minAvailable: "50%"
+  backend:
+    enabled: true
+    minAvailable: "50%"
