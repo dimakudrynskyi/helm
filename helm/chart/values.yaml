@@ -1,0 +1,19 @@
+# Pod Disruption Budget Configuration
+# Ensures minimum pod availability during voluntary disruptions (node upgrades, etc.)
+podDisruptionBudget:
+  # Frontend PDB settings
+  frontend:
+    enabled: true
+    # Minimum number or percentage of pods that must remain available
+    minAvailable: 1
+    # Policy for handling unhealthy pods during eviction
+    # Options: IfHealthyBudget (default), AlwaysAllow
+    unhealthyPodEvictionPolicy: IfHealthyBudget
+  
+  # Backend PDB settings
+  backend:
+    enabled: true
+    # Minimum number or percentage of pods that must remain available
+    minAvailable: 1
+    # Policy for handling unhealthy pods during eviction
+    unhealthyPodEvictionPolicy: IfHealthyBudget
