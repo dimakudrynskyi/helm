@@ -1,0 +1,93 @@
+# Helm chart tests for PDB validation
+# Run with: helm test <release-name>
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "chart.fullname" . }}-pdb-test
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    test: pdb
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  serviceAccountName: {{ include "chart.fullname" . }}-test
+  containers:
+  - name: pdb-validator
+    image: bitnami/kubectl:latest
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        
+        echo "Testing PDB Creation..."
+        
+        # Check if frontend PDB exists
+        if [ "{{ .Values.podDisruptionBudget.frontend.enabled }}" = "true" ]; then
+          echo "Verifying frontend PDB..."
+          if kubectl get pdb {{ include "chart.fullname" . }}-frontend-pdb -n {{ .Release.Namespace }}; then
+            echo "✓ Frontend PDB exists"
+            kubectl describe pdb {{ include "chart.fullname" . }}-frontend-pdb -n {{ .Release.Namespace }}
+          else
+            echo "✗ Frontend PDB not found"
+            exit 1
+          fi
+        fi
+        
+        # Check if backend PDB exists
+        if [ "{{ .Values.podDisruptionBudget.backend.enabled }}" = "true" ]; then
+          echo "Verifying backend PDB..."
+          if kubectl get pdb {{ include "chart.fullname" . }}-backend-pdb -n {{ .Release.Namespace }}; then
+            echo "✓ Backend PDB exists"
+            kubectl describe pdb {{ include "chart.fullname" . }}-backend-pdb -n {{ .Release.Namespace }}
+          else
+            echo "✗ Backend PDB not found"
+            exit 1
+          fi
+        fi
+        
+        echo "All PDB tests passed!"
+    env:
+    - name: KUBECONFIG
+      value: /root/.kube/config
+  restartPolicy: Never
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "chart.fullname" . }}-pdb-test
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    test: pdb
+rules:
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["get", "list", "describe"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "chart.fullname" . }}-pdb-test
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    test: pdb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "chart.fullname" . }}-pdb-test
+subjects:
+- kind: ServiceAccount
+  name: {{ include "chart.fullname" . }}-test
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "chart.fullname" . }}-test
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    test: pdb
