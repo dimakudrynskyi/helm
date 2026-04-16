@@ -1,0 +1,11 @@
+# Production Environment - Pod Disruption Budget Overrides
+# Higher availability requirements for production to ensure service resilience
+podDisruptionBudget:
+  frontend:
+    enabled: true
+    minAvailable: 50%
+    unhealthyPodEvictionPolicy: IfHealthyBudget
+  backend:
+    enabled: true
+    minAvailable: 50%
+    unhealthyPodEvictionPolicy: IfHealthyBudget
